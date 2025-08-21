@@ -1,3 +1,5 @@
+using api.Endpoints;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,7 +8,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
 var app = builder.Build();
+
+// Adiciona o middleware de telemetria
+app.UseMiddleware<api.Middleware.TelemetriaMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -15,11 +21,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapEndpointTelemetria();
+app.MapEndpointSim();
 app.UseHttpsRedirection();
 
-app.MapGet("/teste", () =>
+app.MapGet("/simular", () =>
 {
-    return "ola";
+    return "simulando...";
 })
 .WithName("teste")
 .WithOpenApi();
