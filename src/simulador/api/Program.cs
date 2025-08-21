@@ -1,4 +1,6 @@
 using api.Endpoints;
+using api.Middleware;
+using api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,13 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
+//builder.Services.AddEventHubProducer(builder.Configuration);
 
 var app = builder.Build();
 
 // Adiciona o middleware de telemetria
-app.UseMiddleware<api.Middleware.TelemetriaMiddleware>();
+app.UseMiddleware<TelemetriaMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
