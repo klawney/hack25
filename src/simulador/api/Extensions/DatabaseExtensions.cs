@@ -10,7 +10,7 @@ namespace api.Extensions
     public static class DatabaseExtensions
     {
         // Extensão para Entity Framework com SQL Server
-        public static IServiceCollection AddMssqlEf<TContext>(this IServiceCollection services, IConfiguration config, string connectionName = "DefaultConnection") where TContext : DbContext
+        public static IServiceCollection AddMssqlEf<TContext>(this IServiceCollection services, IConfiguration config, string connectionName = "SqlServerConnection") where TContext : DbContext
         {
             var connectionString = config.GetConnectionString(connectionName);
             services.AddDbContext<TContext>(options =>
@@ -19,7 +19,7 @@ namespace api.Extensions
         }
 
         // Extensão para Dapper com SQL Server
-        public static IServiceCollection AddMssqlDapper(this IServiceCollection services, IConfiguration config, string connectionName = "DefaultConnection")
+        public static IServiceCollection AddMssqlDapper(this IServiceCollection services, IConfiguration config, string connectionName = "SqlServerConnection")
         {
             var connectionString = config.GetConnectionString(connectionName);
             services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
