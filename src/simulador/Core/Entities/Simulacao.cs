@@ -21,14 +21,14 @@ namespace Core.Entities
         }
 
 
-        public string GeraSimulacao(ISistemaAmortizacao sistema)
+        public ResultadoSimulacao GeraSimulacao(ISistemaAmortizacao sistema)
         {
             if (ValorTotal > 0)
             {
-            return sistema.CalculaPorVrTotal(Prazo,TaxaJuros,ValorTotal);
+            return sistema.SimularPorVrTotal (Prazo,TaxaJuros,ValorTotal);
                 
             }
-            return sistema.CalculaPorVrPrestacao(Prazo,TaxaJuros,ValorPrestacao);
+            return sistema.SimularPorVrPrestacao(Prazo,TaxaJuros,ValorPrestacao);
         }
     }
 }

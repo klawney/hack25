@@ -1,7 +1,6 @@
 using api.Endpoints;
 using api.Middleware;
 using Microsoft.AspNetCore.Rewrite;
-using Infra.Configurations;
 using api.Extensions;
 
 
@@ -13,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddEventHubProducer(builder.Configuration);
 //builder.Services.AddEventHubProducer(builder.Configuration);
-builder.Services.AddIoC();
+//builder.Services.AddIoC();
 
 builder.Services.AddMssqlDapper(builder.Configuration);
 

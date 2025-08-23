@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Entities;
 
 namespace Core.Interfaces
 {
     public interface ISistemaAmortizacao
     {
-        string CalculaPorVrTotal(int prazo, decimal taxaJuros,decimal alorTotal);
-        string CalculaPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao);
+        ResultadoSimulacao SimularPorVrTotal(int prazo, decimal taxaJuros, decimal valorTotal);
+        ResultadoSimulacao SimularPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao);
     }
 }
