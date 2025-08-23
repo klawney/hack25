@@ -1,7 +1,9 @@
 using api.Endpoints;
 using api.Middleware;
-using api.Extensions;
 using Microsoft.AspNetCore.Rewrite;
+using Infra.Configurations;
+using api.Extensions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddEventHubProducer(builder.Configuration);
 //builder.Services.AddEventHubProducer(builder.Configuration);
+builder.Services.AddIoC();
+
+builder.Services.AddMssqlDapper(builder.Configuration);
 
 var app = builder.Build();
 
