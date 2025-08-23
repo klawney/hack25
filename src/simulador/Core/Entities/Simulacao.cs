@@ -20,9 +20,15 @@ public class Simulacao
         ValorPrestacao = valorPrestacao;
     }
 
-    // public ResultadoSimulacao GeraSimulacao(ISistemaAmortizacao sistema)
-    // {
-    //     ResultadoSimulacao simT = sistema.SimularPorVrTotal( Prazo, TaxaJuros, valorTotal);
-    //     ResultadoSimulacao simP = sistema.SimularPorVrPrestacao( Prazo, TaxaJuros, ValorPrestacao);
-    // }
+
+        public ResultadoSimulacao GeraSimulacao(ISistemaAmortizacao sistema)
+        {
+            if (ValorTotal > 0)
+            {
+            return sistema.SimularPorVrTotal (Prazo,TaxaJuros,ValorTotal);
+                
+            }
+            return sistema.SimularPorVrPrestacao(Prazo,TaxaJuros,ValorPrestacao);
+        }
+    }
 }
