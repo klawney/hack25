@@ -11,6 +11,7 @@ namespace api.Endpoints
     public static class EndpointsSimulador
     {
         public static WebApplication MapEndpointSimulacao(this WebApplication app)
+        public static WebApplication MapEndpointSimulacao(this WebApplication app)
         {
             var grupo = app.MapGroup("/simulador").WithDisplayName("Simulação de Empréstimos Pessoais");
 

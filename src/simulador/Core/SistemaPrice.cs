@@ -1,47 +1,95 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Core.Entities;
 using Core.Interfaces;
 
-namespace Core
+namespace Core;
+
+public class SistemaPrice : ISistemaAmortizacao
 {
-    public class SistemaPrice : ISistemaAmortizacao
+    public ResultadoSimulacao SimularPorVrTotal(int prazo, decimal taxaJuros, decimal valorTotal)
     {
-        private List<string> Parcelas = [];
-        public string CalculaPorVrTotal(int prazo, decimal taxaJuros, decimal valorTotal)
+        if (prazo <= 0 || valorTotal <= 0)
         {
-            var valorParcela = CalculaParcela(prazo, taxaJuros, valorTotal);
-            CalculaPorVrPrestacao(prazo, taxaJuros, valorParcela);
-
-            return "472.80";
+            return new ResultadoSimulacao { Tipo = "PRICE", Parcelas = new List<Parcela>() };
         }
-        public string CalculaPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao)
+
+        var valorPrestacao = CalculaValorPrestacao(prazo, taxaJuros, valorTotal);
+        return GerarTabelaAmortizacao(prazo, taxaJuros, valorTotal, valorPrestacao);
+    }
+
+    public ResultadoSimulacao SimularPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao)
+    {
+        if (prazo <= 0 || valorPrestacao <= 0)
         {
-            decimal valorTotal = CalculaVlrTotal(prazo,taxaJuros,valorPrestacao);
-            for (int p = 1; p <= prazo; p++)
+            return new ResultadoSimulacao { Tipo = "PRICE", Parcelas = new List<Parcela>() };
+        }
+        
+        var valorTotal = CalculaValorTotal(prazo, taxaJuros, valorPrestacao);
+        return GerarTabelaAmortizacao(prazo, taxaJuros, valorTotal, valorPrestacao);
+    }
+
+    private ResultadoSimulacao GerarTabelaAmortizacao(int prazo, decimal taxaJuros, decimal valorEmprestimo, decimal valorPrestacao)
+    {
+        var saldoDevedor = valorEmprestimo;
+        var parcelas = new List<Parcela>();
+        var taxaDecimal = taxaJuros / 100m;
+
+        for (int i = 0; i < prazo; i++)
+        {
+            var juros = Math.Floor((taxaDecimal * saldoDevedor) * 100) / 100m;
+            var amortizacao = Math.Floor((valorPrestacao - juros) * 100) / 100m;
+            var prestacaoAtual = valorPrestacao;
+
+            if (saldoDevedor - amortizacao < amortizacao)
             {
-                Parcelas.Add($"Parcela {p}, valor {valorPrestacao}");
+                amortizacao = saldoDevedor;
+                prestacaoAtual = Math.Floor((amortizacao + juros) * 100) / 100m;
             }
-            return string.Empty;
+
+            saldoDevedor = Math.Floor((saldoDevedor - amortizacao) * 100) / 100m;
+            
+            if (i == prazo - 1)
+            {
+                saldoDevedor = 0;
+            }
+
+            parcelas.Add(new Parcela
+            {
+                Numero = i + 1,
+                ValorPrestacao = prestacaoAtual,
+                ValorAmortizacao = amortizacao,
+                ValorJuros = juros,
+                SaldoDevedor = saldoDevedor
+            });
         }
 
-        private decimal CalculaParcela(int prazo, decimal taxaJuros, decimal valorTotal)
-        {
-            double tx = ((double)taxaJuros);
-            double pz = ((double)prazo);
-            decimal result = valorTotal * taxaJuros / (1m - ((decimal)Math.Pow(1.0 + tx, -pz)));
-            //Valor atual do débito × Taxa de juros ÷ (1 − (1 + Taxa de juros)^  (− Número de parcelas)) 
-            return decimal.Round(result, 2);
-        }
+        return new ResultadoSimulacao { Tipo = "PRICE", Parcelas = parcelas };
+    }
 
-        private decimal CalculaVlrTotal(int prazo, decimal taxaJuros, decimal valorParcela)
-        {
-            double tx = ((double)taxaJuros);
-            double pz = ((double)prazo);
-            decimal result = ((1m-((decimal)Math.Pow(1.0+tx,-pz))) / taxaJuros ) * valorParcela;
-            //Valor atual do débito × Taxa de juros ÷ (1 − (1 + Taxa de juros)^  (− Número de parcelas)) 
-            return decimal.Round(result,2);
-        }
+    private decimal CalculaValorPrestacao(int prazo, decimal taxaJuros, decimal valorTotal)
+    {
+        var taxaDecimal = taxaJuros / 100m;
+        var potencia = (decimal)Math.Pow(1.0 + (double)taxaDecimal, -prazo);
+        var quociente = 1 - potencia;
+
+        if (quociente == 0) return 0;
+
+        var parcela = valorTotal * taxaDecimal / quociente;
+        
+        return Math.Floor(parcela * 100) / 100m;
+    }
+
+    private decimal CalculaValorTotal(int prazo, decimal taxaJuros, decimal valorPrestacao)
+    {
+        var taxaDecimal = taxaJuros / 100m;
+        if (taxaDecimal == 0) return valorPrestacao * prazo;
+
+        var potencia = (decimal)Math.Pow(1.0 + (double)taxaDecimal, -prazo);
+        var numerador = 1m - potencia;
+        
+        var valorTotal = (numerador / taxaDecimal) * valorPrestacao;
+
+        return decimal.Round(valorTotal, 2);
     }
 }
