@@ -5,5 +5,7 @@ namespace Core.Interfaces;
 
 public interface IProdutosQueryHandler
 {
-    Task<IEnumerable<Produto>> ExecuteQueryAsync(SimulacaoRequestDto parametros);
+    Task<List<Produto>> ListarTodosProdutos();
+    Task<List<Produto>> ListarProdutosCompativeis(int prazo, decimal valorDesejado);
+    Task<Produto> BuscaProdutoCompativel(int prazo, decimal valorDesejado);
 }

@@ -9,6 +9,6 @@ namespace Core.Interfaces;
 
 public interface ISistemaAmortizacao
 {
-    ResultadoSimulacao SimularPorVrTotal(int prazo, decimal taxaJuros, decimal valorTotal);
-    ResultadoSimulacao SimularPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao);
+    ResultadoSimulacao SimularPorPrazoDesejado(int prazo, decimal taxaJuros, decimal valorTotal);
+    ResultadoSimulacao SimularPorVrPrestacaoDesejada(decimal valorPrestacao, decimal taxaJuros, decimal valorTotal);
 }

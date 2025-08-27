@@ -1,8 +1,8 @@
-using api.Endpoints;
-using api.Middleware;
+using Api;
+using Api.Endpoints;
+//using Api.Extentions;
+using Api.Middleware;
 using Microsoft.AspNetCore.Rewrite;
-using api.Extensions;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +12,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddEventHubProducer(builder.Configuration);
 //builder.Services.AddEventHubProducer(builder.Configuration);
-//builder.Services.AddIoC();
-
-builder.Services.AddMssqlDapper(builder.Configuration);
+builder.Services.AddIoC(builder.Configuration);
+//builder.Services.AddMessagingInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
 // Adiciona o middleware de telemetria
-app.UseMiddleware<TelemetriaMiddleware>();
 app.UseMiddleware<TelemetriaMiddleware>();
 
 // Configure the HTTP request pipeline.
@@ -35,6 +33,5 @@ app.MapEndpointSimulacao();
 app.MapEndpointTelemetria();
 
 app.UseHttpsRedirection();
-
 
 app.Run();

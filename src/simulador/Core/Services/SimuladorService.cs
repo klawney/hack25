@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Core.Dtos;
+using Core.Entities;
 using Core.Events;
+using Core.Exceptions;
 using Core.Interfaces;
 
 // using MassTransit; // Removed dependency on MassTransit
@@ -17,25 +15,61 @@ namespace Core.Services
         {
             _produtoQueryHandler = produtoQueryHandler;
         }
-        // Exemplo de método de domínio
-
         public async Task<SimulacaoResponseDto> RealizarSimulacao(SimulacaoRequestDto solicitacao)
         {
-            var produtos = await _produtoQueryHandler.ExecuteQueryAsync(solicitacao);
-            // Exemplo de valores fictícios
-            long idSimulacao = 1;
-            int codigoProduto = 123;
-            string descricaoProduto = "Produto Exemplo";
-            decimal taxaJuros = 0.05m;
-            var resultadoSimulacao = new List<ResultadoSimulacaoDto>() { }; // Preencha conforme sua lógica
-
+            Produto produto = await buscarProduto(solicitacao.Prazo, solicitacao.ValorDesejado);
+            if (produto == null)
+            {
+                throw ProdutoException.ProdutoInexistente(solicitacao.ValorDesejado, solicitacao.Prazo);
+            }
+            List<ResultadoSimulacao> simulacoes = MontarSimulacoes(solicitacao, produto);
+            return ToDto(produto, simulacoes);
+        }
+        private static SimulacaoResponseDto ToDto(Produto produto, List<ResultadoSimulacao> simulacoes)
+        {
             return new SimulacaoResponseDto(
-                idSimulacao,
-                codigoProduto,
-                descricaoProduto,
-                taxaJuros,
-                resultadoSimulacao
+                IdSimulacao: 1, //gerar um id
+                CodigoProduto: produto.CoProduto,
+                DescricaoProduto: produto.NoProduto,
+                TaxaJuros: produto.PcTaxaJuros,
+                ResultadoSimulacao: simulacoes
+                    .Select(r => new ResultadoSimulacaoDto(
+                    Tipo: r.Tipo,
+                    Parcelas: r.Parcelas.Select(p => new ParcelaDto(
+                        Numero: p.Numero,
+                        ValorAmortizacao: p.ValorAmortizacao,
+                        ValorJuros: p.ValorJuros,
+                        ValorPrestacao: p.ValorPrestacao
+                    )).ToList()
+                )).ToList()
             );
+        }
+
+        private List<ResultadoSimulacao> MontarSimulacoes(SimulacaoRequestDto solicitacao, Produto produto)
+        {
+            SistemaPrice price = new SistemaPrice();
+            SistemaSac sac = new SistemaSac();
+            List<ResultadoSimulacao> resultadosCalculos = [];
+            resultadosCalculos.Add(price.SimularPorPrazoDesejado(solicitacao.Prazo, produto.PcTaxaJuros, solicitacao.ValorDesejado));
+            resultadosCalculos.Add(sac.SimularPorPrazoDesejado(solicitacao.Prazo, produto.PcTaxaJuros, solicitacao.ValorDesejado));
+            return resultadosCalculos;
+        }
+
+        private async Task<Produto> buscarProduto(int Prazo, decimal ValorDesejado)
+        {
+            var produtoCompativel = await _produtoQueryHandler.BuscaProdutoCompativel(Prazo, ValorDesejado);
+
+            return produtoCompativel;
+        }
+        private async Task<List<Produto>> listarProdutos(int Prazo, decimal ValorDesejado)
+        {
+            var produtosCompativeis = await _produtoQueryHandler.ListarProdutosCompativeis(Prazo, ValorDesejado);
+            if (produtosCompativeis == null || !produtosCompativeis.Any())
+            {
+                throw new Exception("Nenhum produto encontrado para os critérios fornecidos.");
+            }
+
+            return produtosCompativeis;
         }
     }
 }

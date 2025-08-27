@@ -12,7 +12,7 @@ public class SistemaAmortizacaoTest
         int prazo = 12;
         decimal taxaJuros = 1.0m;
         decimal valorPrestacao = 500.0m;
-        var result = sistema.SimularPorVrPrestacao(prazo, taxaJuros, valorPrestacao);
+        var result = sistema.SimularPorVrPrestacaoDesejada(prazo, taxaJuros, valorPrestacao);
         Console.WriteLine(result);
         Assert.True(true);
     }
@@ -24,7 +24,7 @@ public class SistemaAmortizacaoTest
         int prazo = 12;
         decimal taxaJuros = 0.02m;
         decimal vrTotal = 5000.0m;
-        var result = sistema.SimularPorVrTotal(prazo, taxaJuros, vrTotal);
+        var result = sistema.SimularPorPrazoDesejado(prazo, taxaJuros, vrTotal);
         Assert.IsType<ResultadoSimulacao>(result);
         //Assert.Equal("472.80",result);
     }

@@ -1,54 +1,111 @@
+// Api.QueryHandles/ProdutosQueryHandler.cs
+
 using System.Data;
-using Core.Dtos;
 using Core.Entities;
 using Core.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
-namespace api.QueryHandles
+namespace Api.QueryHandles;
+
+public class ProdutosQueryHandler : IProdutosQueryHandler
 {
-    public class ProdutosQueryHandler : IProdutosQueryHandler
+    // Dependa da fábrica
+    private readonly IDbConnectionFactory _dbConnectionFactory;
+    public ProdutosQueryHandler(IDbConnectionFactory dbConnectionFactory)
     {
-        private readonly IDbConnection _dbConnection;
+        _dbConnectionFactory = dbConnectionFactory;
+    }
+    public async Task<List<Produto>> ListarTodosProdutos()
+    {
+        const string sql = @"SELECT                    
+                    CO_PRODUTO AS CoProduto,
+                    NO_PRODUTO AS NoProduto,
+                    PC_TAXA_JUROS AS PcTaxaJuros,
+                    NU_MINIMO_MESES AS NuMinimoMeses,
+                    NU_MAXIMO_MESES AS NuMaximoMeses,
+                    VR_MINIMO AS VrMinimo,
+                    VR_MAXIMO AS VrMaximo
+                FROM dbo.PRODUTO;";
 
-        public ProdutosQueryHandler(IDbConnection dbConnection)
+        try
         {
-            _dbConnection = dbConnection;
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var produtos = await connection.QueryAsync<Produto>(sql);
+            return produtos.ToList();
         }
-
-        // O método recebe o objeto Query, tornando a assinatura mais limpa e explícita.
-        public async Task<IEnumerable<Produto>> ExecuteQueryAsync(SimulacaoRequestDto query)
+        catch (SqlException ex)
         {
-            const string sql1 = @"
-            SELECT 
-                Id, Nome, TaxaDeJurosAnual, ValorMinimo, ValorMaximo, PrazoMinimoMeses, PrazoMaximoMeses
-            FROM 
-                Produtos
-            WHERE 
-                @ValorDesejado BETWEEN ValorMinimo AND ValorMaximo
-                AND @Prazo BETWEEN PrazoMinimoMeses AND PrazoMaximoMeses;
-            ";
-
-            try
-            {
-               var sql = "SELECT GETDATE() dt;";
-                // Usamos as propriedades do objeto query para os parâmetros do Dapper.<Produto>
-                var produtos = await _dbConnection.QueryAsync(sql);//,
-                   // new { ValorDesejado = "asdas", Prazo = "sadas" });
-                  //  new { ValorDesejado = query.ValorDesejado, Prazo = query.Prazo });
-            }
-            catch (SqlException ex)
-            {
-                var v = ex;
-                throw;
-            }
-            catch (Exception ex)
-            {
-                var v = ex;
-                throw;
-            }
-
-            return new List<Produto>(); //produtos;
+            Console.WriteLine($"[DEBUG] SQL Error: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DEBUG] Error: {ex.Message}");
+            throw;
+        }
+    }
+    public async Task<List<Produto>> ListarProdutosCompativeis(int prazo, decimal valorDesejado)
+    {
+        const string sql = @"SELECT                    
+                    CO_PRODUTO AS CoProduto,
+                    NO_PRODUTO AS NoProduto,
+                    PC_TAXA_JUROS AS PcTaxaJuros,
+                    NU_MINIMO_MESES AS NuMinimoMeses,
+                    NU_MAXIMO_MESES AS NuMaximoMeses,
+                    VR_MINIMO AS VrMinimo,
+                    VR_MAXIMO AS VrMaximo
+                FROM dbo.PRODUTO
+                WHERE  @Valor BETWEEN VR_MINIMO AND VR_MAXIMO
+                    AND @Meses BETWEEN NU_MINIMO_MESES AND NU_MAXIMO_MESES
+                    OR (@Meses >= NU_MINIMO_MESES AND NU_MAXIMO_MESES IS NULL AND @Valor > VR_MINIMO AND VR_MAXIMO IS NULL);";
+        try
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var produtos = await connection.QueryAsync<Produto>(sql, new { Valor = valorDesejado, Meses = prazo });
+            return produtos.ToList();
+        }
+        catch (SqlException ex)
+        {
+            Console.WriteLine($"[DEBUG] SQL Error: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DEBUG] Error: {ex.Message}");
+            throw;
+        }
+    }
+    public async Task<Produto> BuscaProdutoCompativel(int prazo, decimal valorDesejado)
+    {
+        const string sql = @"SELECT                    
+                    CO_PRODUTO AS CoProduto,
+                    NO_PRODUTO AS NoProduto,
+                    PC_TAXA_JUROS AS PcTaxaJuros,
+                    NU_MINIMO_MESES AS NuMinimoMeses,
+                    NU_MAXIMO_MESES AS NuMaximoMeses,
+                    VR_MINIMO AS VrMinimo,
+                    VR_MAXIMO AS VrMaximo
+                FROM dbo.PRODUTO
+                WHERE  @Valor BETWEEN VR_MINIMO AND VR_MAXIMO
+                    AND @Meses BETWEEN NU_MINIMO_MESES AND NU_MAXIMO_MESES
+                    OR (@Meses >= NU_MINIMO_MESES AND NU_MAXIMO_MESES IS NULL AND @Valor > VR_MINIMO AND VR_MAXIMO IS NULL);";
+        try
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var produto = await connection.QueryFirstOrDefaultAsync<Produto>(sql, new { Valor = valorDesejado, Meses = prazo });
+            return produto; 
+        }
+        catch (SqlException ex)
+        {
+            Console.WriteLine($"[DEBUG] SQL Error: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DEBUG] Error: {ex.Message}");
+            throw;
         }
     }
 }

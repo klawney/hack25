@@ -25,9 +25,9 @@ public class Simulacao
     {
         if (ValorTotal > 0)
         {
-            return sistema.SimularPorVrTotal(Prazo, TaxaJuros, ValorTotal);
+            return sistema.SimularPorPrazoDesejado(Prazo, TaxaJuros, ValorTotal);
 
         }
-        return sistema.SimularPorVrPrestacao(Prazo, TaxaJuros, ValorPrestacao);
+        return sistema.SimularPorVrPrestacaoDesejada(ValorPrestacao, TaxaJuros, ValorTotal);
     }
 }

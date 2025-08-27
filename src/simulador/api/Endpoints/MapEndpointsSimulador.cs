@@ -5,7 +5,7 @@ using Core.Interfaces;
 using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Endpoints
+namespace Api.Endpoints
 {
     [ExcludeFromCodeCoverage]
     public static class EndpointsSimulador
@@ -14,8 +14,10 @@ namespace api.Endpoints
         {
             var grupo = app.MapGroup("/simulador").WithDisplayName("Simulação de Empréstimos Pessoais");
 
-            grupo.MapPost("/simular", ( [FromServices] ISimuladorService service, SimulacaoRequestDto requestDto) =>
-                Results.Ok( service.RealizarSimulacao(requestDto)))
+            grupo.MapPost("/simular", async ( [FromServices] ISimuladorService service, SimulacaoRequestDto requestDto) =>
+            {
+                return Results.Ok(await service.RealizarSimulacao(requestDto));
+            })
                 .WithName("Simular")
                 .WithOpenApi();
             
