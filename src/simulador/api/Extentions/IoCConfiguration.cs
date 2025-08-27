@@ -48,5 +48,7 @@ public static class IoCConfiguration
         services.AddScoped<ISimuladorService, SimuladorService>();
         services.AddScoped<IProdutosQueryHandler, ProdutosQueryHandler>();
         services.AddSingleton<IDbConnectionFactory, ProdutosConnectionFactory>();
+        services.AddScoped<IListarSimulacoesQueryHandler, ListarSimulacoesQueryHandler>();
+        services.AddScoped<IGerarRelatorioDiarioQueryHandler, GerarRelatorioDiarioQueryHandler>();
     }
 }
