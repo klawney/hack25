@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Core.Dtos;
 using Core.Interfaces;
+using Api.QueryHandles;
 using Microsoft.AspNetCore.Mvc;
 using Api.Services;
 
@@ -20,18 +21,33 @@ namespace Api.Endpoints
             })
                 .WithName("Simular")
                 .WithOpenApi();
-            
+
+            grupo.MapGet("/realizadas", async (
+                [FromServices] IListarSimulacoesQueryHandler handler,
+                [FromQuery] int? pagina,
+                [FromQuery] int? tamanhoPagina) =>
+            {
+                var resultado = await handler.HandleAsync(pagina ?? 1, tamanhoPagina ?? 10);
+                return Results.Ok(resultado);
+            })
+            .WithName("SimulacoesRealizadas")
+            .WithOpenApi();
+
             grupo.MapGet("/minhas-simulacoes", () => "minhas-simulacoes solicitadas")
                 .WithName("Minhas Simulacoes")
                 .WithOpenApi();
 
-            grupo.MapGet("/realizadas", () => "realizadas")
-                .WithName("SimulacoesRealizadas")
-                .WithOpenApi();
 
-            grupo.MapGet("/diarias-produtos", () => "diarias-produtos")
-                .WithName("SimulacoesDiariasProdutos")
-                .WithOpenApi();
+            grupo.MapGet("/diarias-produtos", async (
+                [FromServices] IGerarRelatorioDiarioQueryHandler handler,
+                [FromQuery] DateTime? data) =>
+            {
+                var resultado = await handler.HandleAsync(data);
+                return Results.Ok(resultado);
+            })
+            .WithName("SimulacoesDiariasProdutos")
+            .WithOpenApi();
+            
             return app;
         }
     }
