@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace api.Middleware
+namespace Api.Middleware
 {
     public class TelemetriaMiddleware
     {
@@ -18,7 +18,7 @@ namespace api.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments("/simular"))
+            if (context.Request.Path.StartsWithSegments("/simulador/simular"))
             {
                 var stopwatch = Stopwatch.StartNew();
                 await _next(context);

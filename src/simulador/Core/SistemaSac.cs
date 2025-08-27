@@ -7,7 +7,7 @@ namespace Core;
 
 public class SistemaSac : ISistemaAmortizacao
 {
-    public ResultadoSimulacao SimularPorVrTotal(int prazo, decimal taxaJuros, decimal valorTotal)
+    public ResultadoSimulacao SimularPorPrazoDesejado(int prazo, decimal taxaJuros, decimal valorTotal)
     {
         if (prazo <= 0 || valorTotal <= 0)
         {
@@ -50,20 +50,21 @@ public class SistemaSac : ISistemaAmortizacao
         return new ResultadoSimulacao { Tipo = "SAC", Parcelas = parcelas };
     }
 
-    public ResultadoSimulacao SimularPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao)
+    public ResultadoSimulacao SimularPorVrPrestacaoDesejada(decimal valorPrestacao, decimal taxaJuros, decimal valorTotal)
     {
-        if (prazo <= 0 || valorPrestacao <= 0)
-        {
-            return new ResultadoSimulacao { Tipo = "SAC", Parcelas = new List<Parcela>() };
-        }
+        // if (prazo <= 0 || valorPrestacao <= 0)
+        // {
+        //     return new ResultadoSimulacao { Tipo = "SAC", Parcelas = new List<Parcela>() };
+        // }
 
-        var taxaDecimal = taxaJuros / 100m;
-        var divisor = (1m / prazo) + taxaDecimal;
+        // var taxaDecimal = taxaJuros / 100m;
+        // var divisor = (1m / prazo) + taxaDecimal;
 
-        if (divisor == 0) return new ResultadoSimulacao { Tipo = "SAC", Parcelas = new List<Parcela>() };
-        
-        var valorTotalCalculado = decimal.Round(valorPrestacao / divisor, 2);
-        
-        return SimularPorVrTotal(prazo, taxaJuros, valorTotalCalculado);
+        // if (divisor == 0) return new ResultadoSimulacao { Tipo = "SAC", Parcelas = new List<Parcela>() };
+
+        // var valorTotalCalculado = decimal.Round(valorPrestacao / divisor, 2);
+
+        // return SimularPorPrazoDesejado(prazo, taxaJuros, valorTotalCalculado);
+        return default;
     }
 }

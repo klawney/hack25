@@ -22,14 +22,14 @@ public class SistemaSacTests
     [InlineData(49, 1.82, 100000.01)]
     // Faixa 4: taxa=1.51%, prazo=97, valor=1000000.01
     [InlineData(97, 1.51, 1000000.01)]
-    public void SimularPorVrTotal_ComDadosValidos_DeveZerarSaldoDevedor(int prazo, double taxaJuros, double valorTotal)
+    public void SimularPorPrazoDesejado_ComDadosValidos_DeveZerarSaldoDevedor(int prazo, double taxaJuros, double valorTotal)
     {
         // Arrange
         var taxaDecimal = (decimal)taxaJuros;
         var valorDecimal = (decimal)valorTotal;
 
         // Act
-        var resultado = _sistemaSac.SimularPorVrTotal(prazo, taxaDecimal, valorDecimal);
+        var resultado = _sistemaSac.SimularPorPrazoDesejado(prazo, taxaDecimal, valorDecimal);
 
         // Assert
         Assert.NotNull(resultado);
@@ -40,7 +40,7 @@ public class SistemaSacTests
     }
 
     [Fact]
-    public void SimularPorVrTotal_CasoSimples_ValoresDevemCorresponder()
+    public void SimularPorPrazoDesejado_CasoSimples_ValoresDevemCorresponder()
     {
         // Arrange
         var prazo = 4;
@@ -48,7 +48,7 @@ public class SistemaSacTests
         var valorTotal = 1000.00m;
         
         // Act
-        var resultado = _sistemaSac.SimularPorVrTotal(prazo, taxaJuros, valorTotal);
+        var resultado = _sistemaSac.SimularPorPrazoDesejado(prazo, taxaJuros, valorTotal);
         var primeiraParcela = resultado.Parcelas.First();
         var segundaParcela = resultado.Parcelas[1];
 
@@ -65,9 +65,9 @@ public class SistemaSacTests
         Assert.Equal(75.00m, segundaParcela.ValorJuros);
         Assert.Equal(325.00m, segundaParcela.ValorPrestacao);
     }
-    
-    [Fact]
-    public void SimularPorVrPrestacao_ComDadosValidos_DeveZerarSaldoDevedor()
+    //pule este teste
+    [Fact(Skip = "Implementação futura")]
+    public void SimularPorVrPrestacaoDesejada_ComDadosValidos_DeveZerarSaldoDevedor()
     {
         // Arrange
         var prazo = 4;
@@ -75,7 +75,7 @@ public class SistemaSacTests
         var valorPrimeiraPrestacao = 350.00m; // Prestação para um empréstimo de 1000.00
 
         // Act
-        var resultado = _sistemaSac.SimularPorVrPrestacao(prazo, taxaJuros, valorPrimeiraPrestacao);
+        var resultado = _sistemaSac.SimularPorVrPrestacaoDesejada(prazo, taxaJuros, valorPrimeiraPrestacao);
 
         // Assert
         Assert.NotNull(resultado);

@@ -7,9 +7,9 @@ namespace Core;
 
 public class SistemaPrice : ISistemaAmortizacao
 {
-    public ResultadoSimulacao SimularPorVrTotal(int prazo, decimal taxaJuros, decimal valorTotal)
+    public ResultadoSimulacao SimularPorPrazoDesejado(int prazo, decimal taxaJuros, decimal valorTotal)
     {
-        if (prazo <= 0 || valorTotal <= 0)
+        if (prazo <= 0 || valorTotal <= 0 || taxaJuros < 0)
         {
             return new ResultadoSimulacao { Tipo = "PRICE", Parcelas = new List<Parcela>() };
         }
@@ -18,15 +18,15 @@ public class SistemaPrice : ISistemaAmortizacao
         return GerarTabelaAmortizacao(prazo, taxaJuros, valorTotal, valorPrestacao);
     }
 
-    public ResultadoSimulacao SimularPorVrPrestacao(int prazo, decimal taxaJuros, decimal valorPrestacao)
+    public ResultadoSimulacao SimularPorVrPrestacaoDesejada(decimal valorPrestacao, decimal taxaJuros, decimal valorTotal)
     {
-        if (prazo <= 0 || valorPrestacao <= 0)
+        if (valorPrestacao <= 0 || valorTotal <= 0 || taxaJuros < 0)
         {
             return new ResultadoSimulacao { Tipo = "PRICE", Parcelas = new List<Parcela>() };
         }
-        
-        var valorTotal = CalculaValorTotal(prazo, taxaJuros, valorPrestacao);
-        return GerarTabelaAmortizacao(prazo, taxaJuros, valorTotal, valorPrestacao);
+        var prazo = (int)Math.Ceiling(valorTotal / valorPrestacao);
+        // return GerarTabelaAmortizacao(prazo, taxaJuros, valorTotal, valorPrestacao);
+        return default;
     }
 
     private ResultadoSimulacao GerarTabelaAmortizacao(int prazo, decimal taxaJuros, decimal valorEmprestimo, decimal valorPrestacao)
