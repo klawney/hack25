@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Core.Dtos;
-using api.Middleware;
+using Api.Middleware;
 using System;
 using System.Collections.Generic;
 
-namespace api.Endpoints
+namespace Api.Endpoints
 {
     public static class TelemetriaEndpointExtensions
     {
