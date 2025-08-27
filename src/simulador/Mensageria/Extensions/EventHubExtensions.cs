@@ -17,9 +17,7 @@ namespace Mensageria.Extensions
                     "A chave de configuração 'AzureEventHub:ConnectionString' não foi encontrada ou não possui um valor. Verifique sua fonte de configuração.");
             }
             
-            // É uma boa prática garantir que o HubName também está configurado,
-            // mesmo que não seja usado diretamente neste construtor, para
-            // evitar confusão futura.
+            // garante que o HubName também está configurado,
             if (string.IsNullOrEmpty(eventHubName))
             {
                 throw new ArgumentNullException(nameof(eventHubName), 

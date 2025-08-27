@@ -47,7 +47,7 @@ namespace Api.Services
             // --- PASSO 2: PERSISTIR A SIMULAÇÃO ---
             var simulacaoParaSalvar = MapToEntity(produto, simulacoes);
             _dbContext.Simulacoes.Add(simulacaoParaSalvar);
-          //  await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             long idSimulacaoPersistida = simulacaoParaSalvar.Id;
 
