@@ -2,8 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Core.Dtos;
 using Core.Interfaces;
-using Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using Api.Services;
 
 namespace Api.Endpoints
 {
